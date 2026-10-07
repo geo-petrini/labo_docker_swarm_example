@@ -35,5 +35,6 @@ Vagrant.configure("2") do |config|
       vb.cpus = 2
     end
     worker.vm.provision "shell", path: "scripts/provision-docker.sh"
+    worker.vm.provision "shell", path: "scripts/portainer-install.sh"
   end
 end
