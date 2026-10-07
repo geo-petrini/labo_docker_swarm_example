@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Docker Swarm lab - 2 VM Ubuntu 24.04 (manager + worker)
+#
+# Uso:
+#   cd esercizi/swarm/vagrant
+#   vagrant up
+#
+# Nota: prima di "vagrant up" assicurati di avere una rete host-only
+# VirtualBox 192.168.56.0/24 (vboxnet0) come descritto nel README (§5.1).
+# Se necessita, cambia "ubuntu/noble64" in "ubuntu/jammy64".
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/noble64"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.define "manager" do |manager|
+    manager.vm.hostname = "manager"
+    manager.vm.network "private_network", ip: "192.168.56.11"
+    manager.vm.provider "virtualbox" do |vb|
+      vb.name = "swarm-manager"
+      vb.memory = 2048
+      vb.cpus = 2
+    end
+    manager.vm.provision "shell", path: "scripts/provision-docker.sh"
+  end
+
+  config.vm.define "worker" do |worker|
+    worker.vm.hostname = "worker"
+    worker.vm.network "private_network", ip: "192.168.56.12"
+    worker.vm.provider "virtualbox" do |vb|
+      vb.name = "swarm-worker"
+      vb.memory = 2048
+      vb.cpus = 2
+    end
+    worker.vm.provision "shell", path: "scripts/provision-docker.sh"
+  end
+end
